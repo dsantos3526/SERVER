@@ -35,3 +35,10 @@ cat client.key client.crt > client.pem
 
 # Connect to mongod with SSL
 # mongo --ssl --sslCAFile ca.crt --sslPEMKeyFile client.pem --host `hostname -f`
+
+
+
+#https://techoverflow.net/2019/04/02/how-to-generate-diffie-hellman-dh-parameters-using-openssl/
+#Create dhparam
+
+openssl dhparam -out dhparams.pem 4096
