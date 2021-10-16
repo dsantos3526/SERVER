@@ -1,68 +1,30 @@
-#!/bin/bash
-# Modif By Diyan Santoso
-
-export  DEBIAN_FRONTEND=noninteractive
+#!/bin/#!/usr/bin/env bash
+# Diyan Santoso
+# initialisasi var
+export DEBIAN_FRONTEND=noninteractive
 OS=`uname -m`;
 MYIP=$(wget -qO- ipv4.icanhazip.com);
 MYIP2="s/xxxxxxxxx/$MYIP/g";
 
-# Informasi STUNNEL
-country=ID
-state=BALI
-locality=BADUNG
-organization=GTG_COMPUTER
-organizationalunit=SERVER_GTG
-commonname=GTGCOMPUTER.MY.ID
-email=ADMIN@GTGCOMPUTER.MY.ID
-
-
-# go to root
+sudo su
 cd
 
-# disable ipv6
-echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6
-sed -i '$ i\echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6' /etc/rc.local
+apt-get -y update && apt-get -y upgrade
+apt-get install wget curl
 
-# install wget and curl
-apt-get update;apt-get -y install wget curl;
-
-# set time GMT +7
 ln -fs /usr/share/zoneinfo/Asia/Jakarta /etc/localtime
 
-# set locale
-sed -i 's/AcceptEnv/#AcceptEnv/g' /etc/ssh/sshd_config
-service ssh restart
-
-# set repo
-wget -O /etc/apt/sources.list "https://raw.githubusercontent.com/kholizsivoi/script/master/sources.list.debian7"
-wget "http://www.dotdeb.org/dotdeb.gpg"
-cat dotdeb.gpg | apt-key add -;rm dotdeb.gpg
-sh -c 'echo "deb http://download.webmin.com/download/repository sarge contrib" > /etc/apt/sources.list.d/webmin.list'
-wget -qO - http://www.webmin.com/jcameron-key.asc | apt-key add -
-
-# update
-apt-get update
-
-# install webserver
 apt-get -y install nginx
 
-# install essential package
-apt-get -y install nano iptables dnsutils openvpn screen whois ngrep unzip unrar
+apt-get -y install nano iptables dnsutils openvpn screen whois ngrep unzip neofetch
 
-# install neofetch
-apt-get update
-apt-get install neofetch
-echo "clear" >> .bash_profile
-echo "neofetch" >> .bash_profile
-
-# install webserver
 cd
 rm /etc/nginx/sites-enabled/default
 rm /etc/nginx/sites-available/default
-wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/nginx.conf"
+wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/kholizsivoi/script/master/nginx.conf"
 mkdir -p /home/vps/public_html
-echo "<pre>~Modif By Diyan Santoso~</pre>" > /home/vps/public_html/index.html
-wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/vps.conf"
+echo "<pre>Diyan Santoso</pre>" > /home/vps/public_html/index.html
+wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/kholizsivoi/script/master/vps.conf"
 service nginx restart
 
 # install openvpn
@@ -86,11 +48,28 @@ wget -O /etc/openvpn/client.ovpn "https://raw.githubusercontent.com/dsantos3526/
 sed -i $MYIP2 /etc/openvpn/client.ovpn;
 cp client.ovpn /home/vps/public_html/
 
+#cek rc.local
+a=/etc/rc.local
+
+if [[ -f "$a" ]]
+then
+    echo "$a Already Installed"
+fi
+if [[ ! -f $a ]]
+then
+    clear
+    echo "$a Not Installed"
+    wget -O /etc/systemd/system/rc-local.service https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/fix-rc.local/rc-local.service && chmod +x /etc/systemd/system/rc-local.service
+    wget -O /etc/rc.local https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/fix-rc.local/rc.local && chmod +x /etc/rc.local
+    systemctl enable rc-local
+    systemctl start rc-local
+fi
+
 # install badvpn
 cd
-wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/badvpn-udpgw"
+wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/badvpn-udpgw"
 if [ "$OS" == "x86_64" ]; then
-  wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/badvpn-udpgw64"
+  wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/badvpn-udpgw64"
 fi
 sed -i '$ i\screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300' /etc/rc.local
 chmod +x /usr/bin/badvpn-udpgw
@@ -112,52 +91,17 @@ echo "/usr/sbin/nologin" >> /etc/shells
 service ssh restart
 service dropbear restart
 
-# install dropbear 2017
-cd
-wget https://raw.githubusercontent.com/kholizsivoi/script/master/dropbear-2017.75.tar.bz2
-apt-get install zlib1g-dev
-bzip2 -cd dropbear-2017.75.tar.bz2  | tar xvf -
-cd dropbear-2017.75
-./configure
-make && make install
-mv /usr/sbin/dropbear /usr/sbin/dropbear1
-ln /usr/local/sbin/dropbear /usr/sbin/dropbear
-service dropbear restart
-rm -f /root/dropbear-2017.75.tar.bz2
 
-# install stunnel4
-#apt-get -y install stunnel4
-#wget -O /etc/stunnel/stunnel.pem "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/stunnel.pem"
-#wget -O /etc/stunnel/stunnel.conf "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/stunnel.conf"
-#sed -i $MYIP2 /etc/stunnel/stunnel.conf
-#sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
-#service stunnel4 restart
-# install stunnel
-apt-get install stunnel4 -y
-cat > /etc/stunnel/stunnel.conf <<-END
-cert = /etc/stunnel/stunnel.pem
-client = no
-socket = a:SO_REUSEADDR=1
-socket = l:TCP_NODELAY=1
-socket = r:TCP_NODELAY=1
 
-[ssh]
-accept = 443
-connect = 127.0.0.1:444
-[squid]
-accept = 8888
-connect = 127.0.0.1:8080
-END
 
+#stunnel4
 echo "=================  membuat Sertifikat OpenSSL ======================"
 echo "========================================================="
 #membuat sertifikat
 openssl genrsa -out key.pem 2048
 openssl req -new -x509 -key key.pem -out cert.pem -days 1095 \
--subj "/C=$country/ST=$state/L=$locality/O=$organization/OU=$organizationalunit/CN=$commonname/emailAddress=$email"
+-subj "/C=ID/ST=BALI/L=BADUNG/O=GTG-COMPUTER/OU=GTG-COMPUTER/CN=GTGCOMPUTER/emailAddress=ADMIN@GTGCOMPUTER.MY.ID"
 cat key.pem cert.pem >> /etc/stunnel/stunnel.pem
-
-# konfigurasi stunnel
 sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
 service stunnel4 restart
 
@@ -168,7 +112,7 @@ service fail2ban restart
 # install squid
 cd
 apt-get -y install squid
-wget -O /etc/squid/squid.conf "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/squid.conf"
+wget -O /etc/squid/squid.conf "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10//script/squid.conf"
 sed -i $MYIP2 /etc/squid/squid.conf;
 service squid restart
 
@@ -187,51 +131,37 @@ iptables -A FORWARD -m string --algo bm --string "torrent" -j DROP
 iptables -A FORWARD -m string --algo bm --string "announce" -j DROP
 iptables -A FORWARD -m string --algo bm --string "info_hash" -j DROP
 
+
 # install ddos deflate
 cd
 apt-get -y install dnsutils dsniff
-wget https://raw.githubusercontent.com/kholizsivoi/script/master/ddos-deflate-master.zip
+wget https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10//script/ddos-deflate-master.zip
 unzip ddos-deflate-master.zip
 cd ddos-deflate-master
 ./install.sh
 rm -rf /root/ddos-deflate-master.zip
 
-
 # setting banner
-rm /etc/issue.net
-wget -O /etc/issue.net "https://raw.githubusercontent.com/kholizsivoi/script/master/issue.net"
+rm /etc/banner.txt
+wget -O /etc/issue.net "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10//script/banner.txt"
 sed -i 's@#Banner@Banner@g' /etc/ssh/sshd_config
-sed -i 's@DROPBEAR_BANNER=""@DROPBEAR_BANNER="/etc/issue.net"@g' /etc/default/dropbear
+sed -i 's@DROPBEAR_BANNER=""@DROPBEAR_BANNER="/etc/banner.txt"@g' /etc/default/dropbear
 service ssh restart
 service dropbear restart
 
-# download script
-cd /usr/bin
-wget -O menu        "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/menu.sh"
-wget -O user-add    "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/user-add.sh"
-wget -O trial       "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/trial.sh"
-wget -O user-del    "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/hapus.sh"
-wget -O user-login  "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/user-login.sh"
-wget -O user-list   "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/user-list.sh"
-wget -O expdel      "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/delexp.sh"
-wget -O resvis      "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/resvis.sh"
-wget -O speedtest   "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/speedtest_cli.py"
-wget -O info        "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/info.sh"
-wget -O about       "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/about.sh"
+##Download Script
+wget -O /usr/bin/menu https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/menu && chmod +x menu
+wget -O /usr/bin/add https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/add && chmod +x add
+wget -O /usr/bin/trial https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/trial && chmod +x trial
+wget -O /usr/bin/del https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/del && chmod +x del
+wget -O /usr/bin/list https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/list && chmod +x list
+wget -O /usr/bin/cek https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/cek && chmod +x cek
+wget -O /usr/bin/del_ex https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/del_ex && chmod +x del_ex
+wget -O /usr/bin/speedtest https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/speedtest.PY && chmod +x speedtest
+wget -O /usr/bin/info https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/info && chmod +x info
+wget -O /usr/bin/about https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/about && chmod +x about
 
 echo "0 0 * * * root /sbin/reboot" > /etc/cron.d/reboot
-
-chmod +x menu
-chmod +x user-add
-chmod +x trial
-chmod +x user-del
-chmod +x user-login
-chmod +x user-list
-chmod +x resvis
-chmod +x speedtest
-chmod +x info
-chmod +x expdel
-chmod +x about
 
 # finishing
 cd
@@ -244,12 +174,14 @@ service dropbear restart
 service stunnel4 restart
 service squid3 restart
 service fail2ban restart
+service webmin restart
 rm -rf ~/.bash_history && history -c
 echo "unset HISTFILE" >> /etc/profile
 clear
 
+
 # info
-echo "~Diyan Santoso~"
+echo "***Diyan Santoso***"
 echo "Autoscript Include:" | tee log-install.txt
 echo "===========================================" | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
@@ -265,40 +197,33 @@ echo "nginx    : 81"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
 echo "Script"  | tee -a log-install.txt
 echo "------"  | tee -a log-install.txt
-echo "menu         (Menampilkan daftar perintah yang tersedia)"  | tee -a log-install.txt
-echo "user-add     (Membuat Akaun SSH)"  | tee -a log-install.txt
-echo "trial        (Membuat Akaun Trial)"  | tee -a log-install.txt
-echo "user-del     (Menghapus Akaun SSH)"  | tee -a log-install.txt
-echo "user-login   (Cek User Login)"  | tee -a log-install.txt
-echo "user-list    (Cek Member SSH)"  | tee -a log-install.txt
-echo "expdel       (Delete User expired)"  | tee -a log-install.txt
-echo "resvis       (Restart Service Dropbear, Webmin, Squid3, OpenVPN dan SSH)"  | tee -a log-install.txt
+echo "menu          (Menampilkan daftar perintah yang tersedia)"  | tee -a log-install.txt
+echo "add           (Membuat Akaun SSH)"  | tee -a log-install.txt
+echo "trial         (Membuat Akaun Trial)"  | tee -a log-install.txt
+echo "del           (Menghapus Akaun SSH)"  | tee -a log-install.txt
+echo "cek           (Cek User Login)"  | tee -a log-install.txt
+echo "list          (Cek Member SSH)"  | tee -a log-install.txt
+echo "del_ex        (Delete User expired)"  | tee -a log-install.txt
+#echo "resvis       (Restart Service Dropbear, Webmin, Squid3, OpenVPN dan SSH)"  | tee -a log-install.txt
 echo "reboot       (Reboot VPS)"  | tee -a log-install.txt
 echo "speedtest    (Speedtest VPS)"  | tee -a log-install.txt
 echo "info         (Menampilkan Informasi Sistem)"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
 echo "Fitur lain"  | tee -a log-install.txt
 echo "----------"  | tee -a log-install.txt
-#echo "Webmin   : http://$MYIP:10000/"  | tee -a log-install.txt
 echo "Timezone : Asia/Jakarta (GMT +7)"  | tee -a log-install.txt
 echo "IPv6     : [off]"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
 echo "Thanks To"  | tee -a log-install.txt
 echo "---------"  | tee -a log-install.txt
 echo "Allah"  | tee -a log-install.txt
-echo "Admin And All Member KPN Family"  | tee -a log-install.txt
 echo "Google"  | tee -a log-install.txt
-echo ""  | tee -a log-install.txt
-echo "Goup"  | tee -a log-install.txt
-echo "----"  | tee -a log-install.txt
-echo "CPM/OOCPM"  | tee -a log-install.txt
-echo "KPN IMO"  | tee -a log-install.txt
-echo "K.A.G"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
 echo "VPS AUTO REBOOT SETIAP JAM 00.00 WIB"  | tee -a log-install.txt
 echo "Log Installation --> /root/log-install.txt"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
 echo "==========================================="  | tee -a log-install.txt
 cd
-rm -f /root/debian.sh
+rm -f /root/deb10.sh
+
 
