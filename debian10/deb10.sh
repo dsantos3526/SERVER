@@ -1,4 +1,4 @@
-#!/bin/#!/usr/bin/env bash
+#!/bin/bash
 # Diyan Santoso
 # initialisasi var
 export DEBIAN_FRONTEND=noninteractive
