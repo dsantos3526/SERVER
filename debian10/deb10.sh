@@ -143,7 +143,7 @@ rm -rf /root/ddos-deflate-master.zip
 
 # setting banner
 rm /etc/banner.txt
-wget -O /etc/issue.net "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10//script/banner.txt"
+wget -O /etc/banner.txt "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/banner.txt"
 sed -i 's@#Banner@Banner@g' /etc/ssh/sshd_config
 sed -i 's@DROPBEAR_BANNER=""@DROPBEAR_BANNER="/etc/banner.txt"@g' /etc/default/dropbear
 service ssh restart
