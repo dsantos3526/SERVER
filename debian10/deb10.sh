@@ -1,22 +1,54 @@
 #!/bin/bash
 # Diyan Santoso
 # initialisasi var
-export DEBIAN_FRONTEND=noninteractive
-OS=`uname -m`;
-MYIP=$(wget -qO- ipv4.icanhazip.com);
-MYIP2="s/xxxxxxxxx/$MYIP/g";
 
-sudo su
+#Os
+os=`uname -m`
+echo "$os"
+sleep
+
+
+#Cek IP
+exec 3<>/dev/tcp/icanhazip.com/80
+echo -e 'GET / HTTP/1.0\r\nhost: icanhazip.com\r\n\r' >&3
+while read i
+do
+ [ "$i" ] && myip="$i"
+done <&3
+echo "$myip"
+
+#Cek file dan Jka tidak ada akan membuat file
+a=/root/ip.txt
+if [[ -f "$a" ]]
+then
+    echo "$a Sudah Ada File nya"
+fi
+if [[ ! -f $a ]]
+then
+  touch /root/ip.txt
+  echo "$myip" >> /root/ip.txt
+fi
+
+#Update && Upgrade Debian
+apt-get -y update && apt-get -y upgrade
 cd
 
-apt-get -y update && apt-get -y upgrade
+sleep 2
+clear
 apt-get install wget curl
-
+echo "TimeZone GMT +7"
 ln -fs /usr/share/zoneinfo/Asia/Jakarta /etc/localtime
+clear
+sleep 2
 
+#Installl Package
+apt-get -y install nano iptables openssl dnsutils openvpn screen whois ngrep unzip neofetch ufw vnstat
+
+echo "Memulai Install Nginx"
 apt-get -y install nginx
-
-apt-get -y install nano iptables dnsutils openvpn screen whois ngrep unzip neofetch
+clear
+echo "Nginx Selesai di install"
+sleep 2
 
 cd
 rm /etc/nginx/sites-enabled/default
@@ -24,7 +56,7 @@ rm /etc/nginx/sites-available/default
 wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/kholizsivoi/script/master/nginx.conf"
 mkdir -p /home/vps/public_html
 echo "<pre>Diyan Santoso</pre>" > /home/vps/public_html/index.html
-wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/kholizsivoi/script/master/vps.conf"
+wget -O  "https://raw.githubusercontent.com/kholizsivoi/script/master/vps.conf"
 service nginx restart
 
 # install openvpn
@@ -45,7 +77,7 @@ service openvpn restart
 # konfigurasi openvpn
 cd /etc/openvpn/
 wget -O /etc/openvpn/client.ovpn "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/client.conf"
-sed -i $MYIP2 /etc/openvpn/client.ovpn;
+sed -i 's/xxx/'$myip'/g' /etc/openvpn/client.ovpn;
 cp client.ovpn /home/vps/public_html/
 
 #cek rc.local
@@ -53,7 +85,7 @@ a=/etc/rc.local
 
 if [[ -f "$a" ]]
 then
-    echo "$a Already Installed"
+    echo "$a Sudah Ada"
 fi
 if [[ ! -f $a ]]
 then
@@ -68,7 +100,7 @@ fi
 # install badvpn
 cd
 wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/badvpn-udpgw"
-if [ "$OS" == "x86_64" ]; then
+if [ "$os" == "x86_64" ]; then
   wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/badvpn-udpgw64"
 fi
 sed -i '$ i\screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300' /etc/rc.local
@@ -76,6 +108,8 @@ chmod +x /usr/bin/badvpn-udpgw
 screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300
 
 # setting port ssh
+
+
 cd
 sed -i 's/Port 22/Port 22/g' /etc/ssh/sshd_config
 sed -i '/Port 22/a Port 143' /etc/ssh/sshd_config
@@ -84,14 +118,26 @@ service ssh restart
 # install dropbear
 apt-get -y install dropbear
 sed -i 's/NO_START=1/NO_START=0/g' /etc/default/dropbear
-sed -i 's/DROPBEAR_PORT=22/DROPBEAR_PORT=444/g' /etc/default/dropbear
+sed -i 's/DROPBEAR_PORT=22/DROPBEAR_PORT=143/g' /etc/default/dropbear
 sed -i 's/DROPBEAR_EXTRA_ARGS=/DROPBEAR_EXTRA_ARGS="-p 444 -p 80"/g' /etc/default/dropbear
 echo "/bin/false" >> /etc/shells
 echo "/usr/sbin/nologin" >> /etc/shells
 service ssh restart
 service dropbear restart
+sleep 2
+#config stunnel
+apt-get -y install stunnel4
+cat > /etc/stunnel/stunnel.conf <<-END
+cert = /etc/stunnel/stunnel.pem
+client = no
+socket = a:SO_REUSEADDR=1
+socket = l:TCP_NODELAY=1
+socket = r:TCP_NODELAY=1
 
-
+[ssh]
+accept = 443
+connect = 127.0.0.1:444
+END
 
 
 #stunnel4
@@ -104,7 +150,7 @@ openssl req -new -x509 -key key.pem -out cert.pem -days 1095 \
 cat key.pem cert.pem >> /etc/stunnel/stunnel.pem
 sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
 service stunnel4 restart
-
+sleep 2
 # install fail2ban
 apt-get -y install fail2ban;
 service fail2ban restart
@@ -113,7 +159,8 @@ service fail2ban restart
 cd
 apt-get -y install squid
 wget -O /etc/squid/squid.conf "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10//script/squid.conf"
-sed -i $MYIP2 /etc/squid/squid.conf;
+#Sent IP
+sed -i 's/xxx/'$myip'/g' /etc/squid/squid.conf
 service squid restart
 
 # blockir torrent
@@ -143,25 +190,49 @@ rm -rf /root/ddos-deflate-master.zip
 
 # setting banner
 rm /etc/banner.txt
-wget -O /etc/banner.txt "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/banner.txt"
+wget -O /etc/banner.txt "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10//script/banner.txt"
 sed -i 's@#Banner@Banner@g' /etc/ssh/sshd_config
 sed -i 's@DROPBEAR_BANNER=""@DROPBEAR_BANNER="/etc/banner.txt"@g' /etc/default/dropbear
 service ssh restart
 service dropbear restart
 
+#ufw
+sudo ufw enabled
+sudo ufw allow 443
+sudo ufw allow 1194
+sudo ufw allow 80
+sudo ufw allow 22
+sudo ufw allow 81
+sudo ufw allow 143
+sudo ufw allow 444
+sudo ufw enable
+
 ##Download Script
-wget -O /usr/bin/menu https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/menu && chmod +x menu
-wget -O /usr/bin/add https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/add && chmod +x add
-wget -O /usr/bin/trial https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/trial && chmod +x trial
-wget -O /usr/bin/del https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/del && chmod +x del
-wget -O /usr/bin/list https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/list && chmod +x list
-wget -O /usr/bin/cek https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/cek && chmod +x cek
-wget -O /usr/bin/del_ex https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/del_ex && chmod +x del_ex
-wget -O /usr/bin/speedtest https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/speedtest.PY && chmod +x speedtest
-wget -O /usr/bin/info https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/info && chmod +x info
-wget -O /usr/bin/about https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/about && chmod +x about
+cd /usr/bin
+wget -O /usr/bin/menu https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/menu
+wget -O /usr/bin/add https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/add
+wget -O /usr/bin/trial https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/trial
+wget -O /usr/bin/del https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/del
+wget -O /usr/bin/list https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/list
+wget -O /usr/bin/cek https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/cek
+wget -O /usr/bin/del_ex https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/del_ex
+wget -O /usr/bin/speedtest https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/speedtest.py
+wget -O /usr/bin/info https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/info
+wget -O /usr/bin/about https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/about
 
 echo "0 0 * * * root /sbin/reboot" > /etc/cron.d/reboot
+
+chmod +x /usr/bin/menu
+chmod +x /usr/bin/add
+chmod +x /usr/bin/trial
+chmod +x /usr/bin/del
+chmod +x /usr/bin/list
+chmod +x /usr/bin/cek
+chmod +x /usr/bin/del_ex
+chmod +x /usr/bin/speedtest
+chmod +x /usr/bin/info
+chmod +x /usr/bin/about
+
 
 # finishing
 cd
@@ -224,6 +295,4 @@ echo "Log Installation --> /root/log-install.txt"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
 echo "==========================================="  | tee -a log-install.txt
 cd
-rm -f /root/deb10.sh
-
-
+rm -f /root/debian10.sh
