@@ -57,7 +57,7 @@ rm /etc/nginx/sites-available/default
 wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/nginx.conf"
 mkdir -p /home/vps/public_html
 echo "<pre>Diyan Santoso</pre>" > /home/vps/public_html/index.html
-wget -O  "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/vps.conf"
+wget -O /etc/nginx/conf.d/vps.conf  "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/vps.conf"
 service nginx restart
 
 # install openvpn
