@@ -30,6 +30,7 @@ then
 fi
 
 #Update && Upgrade Debian
+apt-get update --allow-releaseinfo-change
 apt-get -y update && apt-get -y upgrade
 cd
 
