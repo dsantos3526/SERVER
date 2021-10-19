@@ -3,6 +3,7 @@
 ```
 apt-get update --allow-releaseinfo-change
 apt-get -y update && apt-get -y upgrade
+apt-get install wget
 ```
 
 
