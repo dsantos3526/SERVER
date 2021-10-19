@@ -54,10 +54,10 @@ sleep 2
 cd
 rm /etc/nginx/sites-enabled/default
 rm /etc/nginx/sites-available/default
-wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/kholizsivoi/script/master/nginx.conf"
+wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/nginx.conf"
 mkdir -p /home/vps/public_html
 echo "<pre>Diyan Santoso</pre>" > /home/vps/public_html/index.html
-wget -O  "https://raw.githubusercontent.com/kholizsivoi/script/master/vps.conf"
+wget -O  "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/vps.conf"
 service nginx restart
 
 # install openvpn
@@ -199,13 +199,13 @@ service dropbear restart
 
 #ufw
 sudo ufw enabled
-sudo ufw allow 443
-sudo ufw allow 1194
-sudo ufw allow 80
-sudo ufw allow 22
-sudo ufw allow 81
-sudo ufw allow 143
-sudo ufw allow 444
+sudo ufw allow 443 comment "Stunnel"
+sudo ufw allow 1194 comment "Openvpn"
+sudo ufw allow 80 comment "Http"
+sudo ufw allow 22 comment "SSH OPenssh"
+sudo ufw allow 81 comment "Nginx"
+sudo ufw allow 222 comment "Dropbear"
+sudo ufw allow 444 comment "Dropbear"
 sudo ufw enable
 
 ##Download Script
