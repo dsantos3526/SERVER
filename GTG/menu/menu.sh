@@ -1,35 +1,36 @@
 #!/bin/bash
 
-echo -e "[*][*][*]======================================[*][*][*]"  | lolcat
-echo -e "                                                  "        | lolcat
-echo -e "            Panel Utama GTG COMPUTER"                      | lolcat
-echo -e "                                                          "| lolcat
-echo -e "    [1] Panel SSH"                      | lolcat
-echo -e "    [2] Panel V2ray"                      | lolcat
-echo -e "    [3] Panel "                     | lolcat
-echo -e "    [4] More Options"| lolcat
-echo -e "    [x] menu"| lolcat
-echo -e "                                                   "| lolcat
+echo -e "[*][*][*]======================================[*][*][*]"      | lolcat
+echo -e "                                                  "            | lolcat
+echo -e "            Panel Utama GTG COMPUTER"                          | lolcat
+echo -e "                                                          "    | lolcat
+echo -e "    [1] Panel SSH (SSH, WebsocketSSH & OpenVPN)"               | lolcat
+echo -e "    [2] Panel V2ray (Vmess, Vless, Trojan)"                    | lolcat
+echo -e "    [4] Panel Shadowsocks (ShadowsocksR & Shadowsocks OBFS)"   | lolcat
+echo -e "    [3] Panel Wireguard"                                       | lolcat
+echo -e "    [4] Panel PSP (L2TP, SSTP, PPTP)"                          | lolcat
+echo -e "    [x] Exit"                                                  | lolcat
+echo -e "                                                   "           | lolcat
 read -p "      Select From Options [1-4 or x] :  " vvt
-echo -e "                                                   "| lolcat
-echo -e "[*][*][*]======================================[*][*][*]"| lolcat
+echo -e "                                                   "           | lolcat
+echo -e "[*][*][*]======================================[*][*][*]"      | lolcat
 clear
 case $vvt in
 
 1)
-add-ws
+panel-ssh
 ;;
 2)
-add-vless
+panel-v2ray
 ;;
 3)
-add-tr
+panel-ss
 ;;
 4)
-options
+panel-wg
 ;;
 x)
-menu
+panel-psp
 ;;
 *)
 echo "Please enter an correct number"
