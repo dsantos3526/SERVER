@@ -8,11 +8,11 @@ apt-get update
 apt-get upgrade -y
 cd
 cd /etc/systemd/system/
-wget -O /etc/systemd/system/ws-openssh.service https://raw.githubusercontent.com/Gl33ch3r/autoscript/main/ws-openssh.service
+wget -O /etc/systemd/system/ws-openssh.service https://raw.githubusercontent.com/dsantos3526/SERVER/main/SSH-WS/ws-openssh.service
 cd
 cd /usr/local/bin/
 #Install Script Websocket-SSH Python
-wget -O /usr/local/bin/ws-openssh https://raw.githubusercontent.com/Gl33ch3r/autoscript/main/ws-openssh.py
+wget -O /usr/local/bin/ws-openssh https://raw.githubusercontent.com/dsantos3526/SERVER/main/SSH-WS/ws-openssh.py
 chmod +x /usr/local/bin/ws-openssh
 ##Screen
 apt-get install screen -y

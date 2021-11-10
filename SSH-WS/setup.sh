@@ -26,13 +26,14 @@ sudo gem install lolcat
 # Running screenfetch
 cd
 rm -rf /root/.bashrc
-wget -O /root/.bashrc https://raw.githubusercontent.com/Gl33ch3r/autoscript/main/.bashrc
-
-wget https://raw.githubusercontent.com/Gl33ch3r/autoscript/main/ssh-vpn.sh && chmod +x ssh-vpn.sh && ./ssh-vpn.sh
+wget -O /root/.bashrc https://raw.githubusercontent.com/dsantos3526/SERVER/main/SSH-WS/.bashrc
+#install cf
+wget https://raw.githubusercontent.com/dsantos3526/SERVER/main/SSH-WS/cloudflare.sh && chmod +x cloudflare.sh && ./cloudflare.sh
+#install ssh ovpn
+wget https://raw.githubusercontent.com/dsantos3526/SERVER/main/SSH-WS/ssh-vpn.sh && chmod +x ssh-vpn.sh && ./ssh-vpn.sh
 
 #install WebsocketSSH
-wget https://raw.githubusercontent.com/Gl33ch3r/autoscript/main/inswssh.sh && chmod +x inswssh.sh && ./inswssh.sh
-
+wget https://raw.githubusercontent.com/dsantos3526/SERVER/main/SSH-WS/inswssh.sh && chmod +x inswssh.sh && ./inswssh.sh
 # set time GMT +8
 ln -fs /usr/share/zoneinfo/Asia/Manila /etc/localtime
 # install webserver
@@ -40,9 +41,9 @@ apt -y install nginx
 cd
 rm /etc/nginx/sites-enabled/default
 rm /etc/nginx/sites-available/default
-wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/Gl33ch3r/autoscript/main/nginx.conf"
+wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/dsantos3526/SERVER/main/SSH-WS/nginx.conf"
 mkdir -p /home/vps/public_html
-wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/Gl33ch3r/autoscript/main/vps.conf"
+wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/dsantos3526/SERVER/main/SSH-WS/vps.conf"
 /etc/init.d/nginx restart
 
 echo "0 0 * * * root /sbin/reboot" > /etc/cron.d/reboot
@@ -72,7 +73,7 @@ WantedBy=multi-user.target
 EOF
 systemctl daemon-reload
 systemctl enable autosett
-wget -O /etc/set.sh "https://raw.githubusercontent.com/Gl33ch3r/autoscript/main/set.sh"
+wget -O /etc/set.sh "https://raw.githubusercontent.com/dsantos3526/SERVER/main/SSH-WS/set.sh"
 chmod +x /etc/set.sh
 history -c
 echo "1.2" > /home/ver
@@ -80,7 +81,7 @@ clear
 echo " "
 echo "Installation has been completed!!"
 echo " "
-echo "=================================-Autoscript Premium-===========================" | tee -a log-install.txt
+echo "=================================-Autoscript GTG COMPUTER-===========================" | tee -a log-install.txt
 echo "" | tee -a log-install.txt
 echo "--------------------------------------------------------------------------------" | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
@@ -93,7 +94,6 @@ echo "   - Dropbear                : 109, 143"  | tee -a log-install.txt
 echo "   - Squid Proxy             : 3128, 8080 (limit to IP Server)"  | tee -a log-install.txt
 echo "   - Badvpn                  : 7100, 7200, 7300"  | tee -a log-install.txt
 echo "   - Nginx                   : 81"  | tee -a log-install.txt
-
 echo ""  | tee -a log-install.txt
 echo "   >>> Server Information & Other Features"  | tee -a log-install.txt
 echo "   - Timezone                : Asia/Jakarta (GMT +7)"  | tee -a log-install.txt
@@ -108,9 +108,9 @@ echo "   - Full Orders For Various Services" | tee -a log-install.txt
 echo "   - White Label" | tee -a log-install.txt
 echo "   - Installation Log --> /root/log-install.txt"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
-echo "   - Dev/Main                : Diyan Santoso | tee -a log-install.txt
-echo "   - Telegram                : T.me/Diyan_Santoso"  | tee -a log-install.txt
-echo "   - Whatsapp                : 085738127969 log-install.txt
-echo "------------------Script Created By Diyan Santoso-----------------" | tee -a log-install.txt
+echo "   - Dev/Main                : Diyan Santoso"  | tee -a log-install.txt
+echo "   - Telegram                : T.me/diyan.santoso"  | tee -a log-install.txt
+echo "   - Whatsapp                : 085738127969"  | tee -a log-install.txt
+echo "------------------Script Modified By Diyan Santoso-----------------" | tee -a log-install.txt
 echo ""
 rm -f setup.sh
