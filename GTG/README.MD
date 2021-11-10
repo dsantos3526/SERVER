@@ -1,0 +1,8 @@
+########
+#MODIFIED BY DIYAN SANTOSO
+
+SSH SSL, SSH WS, OPENVPN, VMESS,VLESS
+
+```
+apt update
+```
