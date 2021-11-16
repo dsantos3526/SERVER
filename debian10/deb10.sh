@@ -141,7 +141,8 @@ socket = r:TCP_NODELAY=1
 
 [ssh]
 accept = 443
-connect = 127.0.0.1:222
+connect = 127.0.0.1:444
+
 END
 
 
@@ -217,6 +218,12 @@ systemctl enable vnstat
 /etc/init.d/vnstat restart
 rm -f /root/vnstat-2.6.tar.gz
 rm -rf /root/vnstat-2.6
+
+#Install Websocket
+wget https://github.com/dsantos3526/SERVER/blob/main/debian10/script/websocket/install-ws.sh
+chmod +x isntall-ws.sh
+bash install-ws.sh
+rm -f install-ws.sh
 
 #ufw
 #sudo ufw enabled

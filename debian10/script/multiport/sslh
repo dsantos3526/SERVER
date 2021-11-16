@@ -2,3 +2,25 @@
 
 apt install sslh
 
+cat > /etc/default/sslh <<-END
+RUN=yes
+DAEMON=/usr/sbin/sslh
+DAEMON_OPTS='--user sslh --listen 0.0.0.0:443 --ssh 127.0.0.1:444 --tls 127.0.0.1:9443 --http 127.0.0.1:80 --pidfile /var/run/sslh/sslh.pid'
+END
+
+
+cat > /etc/stunnel/stunnel.conf <<-END
+cert = /etc/stunnel/stunnel.pem
+client = no
+socket = a:SO_REUSEADDR=1
+socket = l:TCP_NODELAY=1
+socket = r:TCP_NODELAY=1
+
+[ssh]
+accept = 1443
+connect = 127.0.0.1:444
+
+[tls]
+accept = 9443
+connect = 443
+END
