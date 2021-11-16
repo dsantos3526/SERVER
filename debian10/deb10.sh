@@ -113,11 +113,13 @@ screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300
 
 # setting ssh
 cd
-echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
-echo "Banner /etc/banner.txt" >> /etc/ssh/sshd_config
-echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+
 echo "Port 22" >> /etc/ssh/sshd_config
 echo "Port 234" >> /etc/ssh/sshd_config
+echo "PermitRootLogin Yes" >> /etc/ssh/sshd_config
+echo "PasswordAuthentication Yes" >> /etc/ssh/sshd_config
+echo "Banner /etc/banner.txt" >> /etc/ssh/sshd_config
+
 service ssh restart
 
 # install dropbear
