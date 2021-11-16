@@ -5,17 +5,15 @@
 #Os
 os=`uname -m`
 echo "$os"
+NET=$(ip -o $ANU -4 route show to default | awk '{print $5}');
 sleep
 
 
 #Cek IP
-exec 3<>/dev/tcp/icanhazip.com/80
-echo -e 'GET / HTTP/1.0\r\nhost: icanhazip.com\r\n\r' >&3
-while read i
-do
- [ "$i" ] && myip="$i"
-done <&3
-echo "$myip"
+myip=$(wget -qO- icanhazip.com);
+echo "IP Public Anda : $myip"
+sleep 2
+
 
 #Cek file dan Jka tidak ada akan membuat file
 a=/root/ip.txt
@@ -26,7 +24,7 @@ fi
 if [[ ! -f $a ]]
 then
   touch /root/ip.txt
-  echo "$myip" >> /root/ip.txt
+  echo "$myip" > /root/ip.txt
 fi
 
 # disable ipv6
@@ -119,6 +117,7 @@ echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
 echo "Banner /etc/banner.txt" >> /etc/ssh/sshd_config
 echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
 echo "Port 22" >> /etc/ssh/sshd_config
+echo "Port 234" >> /etc/ssh/sshd_config
 service ssh restart
 
 # install dropbear
@@ -202,16 +201,55 @@ sed -i 's@DROPBEAR_BANNER=""@DROPBEAR_BANNER="/etc/banner.txt"@g' /etc/default/d
 service ssh restart
 service dropbear restart
 
+# setting vnstat
+apt -y install vnstat
+/etc/init.d/vnstat restart
+apt -y install libsqlite3-dev
+wget https://humdi.net/vnstat/vnstat-2.6.tar.gz
+tar zxvf vnstat-2.6.tar.gz
+cd vnstat-2.6
+./configure --prefix=/usr --sysconfdir=/etc && make && make install
+cd
+vnstat -u -i $NET
+sed -i 's/Interface "'""eth0""'"/Interface "'""$NET""'"/g' /etc/vnstat.conf
+chown vnstat:vnstat /var/lib/vnstat -R
+systemctl enable vnstat
+/etc/init.d/vnstat restart
+rm -f /root/vnstat-2.6.tar.gz
+rm -rf /root/vnstat-2.6
+
 #ufw
-sudo ufw enabled
-sudo ufw allow 443 comment "Stunnel"
-sudo ufw allow 1194 comment "Openvpn"
-sudo ufw allow 80 comment "Http"
-sudo ufw allow 22 comment "SSH OPenssh"
-sudo ufw allow 81 comment "Nginx"
-sudo ufw allow 222 comment "Dropbear"
-sudo ufw allow 444 comment "Dropbear"
-sudo ufw enable
+#sudo ufw enabled
+#sudo ufw allow 443 comment "Stunnel"
+#sudo ufw allow 1194 comment "Openvpn"
+#sudo ufw allow 80 comment "Http"
+#sudo ufw allow 22 comment "SSH OPenssh"
+#sudo ufw allow 81 comment "Nginx"
+#sudo ufw allow 222 comment "Dropbear"
+#sudo ufw allow 444 comment "Dropbear"
+#sudo ufw enable
+
+
+# Firewall Allow IPTables
+iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 1194 -j ACCEPT
+iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT
+iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 81 -j ACCEPT
+iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 222 -j ACCEPT
+iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 444 -j ACCEPT
+iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT
+iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j ACCEPT
+iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 234 -j ACCEPT
+
+iptables -I INPUT -m state --state NEW -m udp -p udp --dport 1194 -j ACCEPT
+iptables -I INPUT -m state --state NEW -m udp -p udp --dport 443 -j ACCEPT
+iptables -I INPUT -m state --state NEW -m udp -p udp --dport 81 -j ACCEPT
+iptables -I INPUT -m state --state NEW -m udp -p udp --dport 222 -j ACCEPT
+iptables -I INPUT -m state --state NEW -m udp -p udp --dport 444 -j ACCEPT
+iptables -I INPUT -m state --state NEW -m udp -p udp --dport 80 -j ACCEPT
+iptables -I INPUT -m state --state NEW -m udp -p udp --dport 22 -j ACCEPT
+iptables -I INPUT -m state --state NEW -m udp -p udp --dport 234 -j ACCEPT
+iptables-save > /etc/iptables.up.rules
+iptables-restore -t < /etc/iptables.up.rules
 
 ##Download Script
 cd /usr/bin
@@ -225,7 +263,7 @@ wget -O /usr/bin/del_ex https://raw.githubusercontent.com/dsantos3526/SERVER/mai
 wget -O /usr/bin/speedtest https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/speedtest.py
 wget -O /usr/bin/info https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/info
 wget -O /usr/bin/about https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/about
-
+wget -O /usr/bin/about https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/domain
 echo "0 0 * * * root /sbin/reboot" > /etc/cron.d/reboot
 
 chmod +x /usr/bin/menu
@@ -238,7 +276,7 @@ chmod +x /usr/bin/del_ex
 chmod +x /usr/bin/speedtest
 chmod +x /usr/bin/info
 chmod +x /usr/bin/about
-
+chmod +x /usr/bin/domain
 
 # finishing
 cd
@@ -249,56 +287,58 @@ service cron restart
 service ssh restart
 service dropbear restart
 service stunnel4 restart
-service squid3 restart
+service squid restart
 service fail2ban restart
-service webmin restart
 rm -rf ~/.bash_history && history -c
 echo "unset HISTFILE" >> /etc/profile
 clear
 
 
-# info
-echo "***Diyan Santoso***"
-echo "Autoscript Include:" | tee log-install.txt
-echo "===========================================" | tee -a log-install.txt
+# info    
+echo "**********************************************************************"
+echo "*********************** Autoscript GTG COMPUTER **********************" | tee log-install.txt
+echo "**********************************************************************" | tee -a log-install.txt
+echo "*************************** SSH WS & OPENVPN *************************" | tee -a log-install.txt
+echo "**********************************************************************" | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
-echo "Service"  | tee -a log-install.txt
-echo "-------"  | tee -a log-install.txt
-echo "OpenSSH  : 22, 143"  | tee -a log-install.txt
-echo "Dropbear : 80, 444"  | tee -a log-install.txt
-echo "SSL      : 443"  | tee -a log-install.txt
-echo "Squid3   : 8080, 3128 (limit to IP SSH)"  | tee -a log-install.txt
-echo "OpenVPN  : TCP 1194 (client config : http://$MYIP:81/client.ovpn)"  | tee -a log-install.txt
-echo "badvpn   : badvpn-udpgw port 7300"  | tee -a log-install.txt
-echo "nginx    : 81"  | tee -a log-install.txt
-echo ""  | tee -a log-install.txt
-echo "Script"  | tee -a log-install.txt
-echo "------"  | tee -a log-install.txt
-echo "menu          (Menampilkan daftar perintah yang tersedia)"  | tee -a log-install.txt
-echo "add           (Membuat Akaun SSH)"  | tee -a log-install.txt
-echo "trial         (Membuat Akaun Trial)"  | tee -a log-install.txt
-echo "del           (Menghapus Akaun SSH)"  | tee -a log-install.txt
-echo "cek           (Cek User Login)"  | tee -a log-install.txt
-echo "list          (Cek Member SSH)"  | tee -a log-install.txt
-echo "del_ex        (Delete User expired)"  | tee -a log-install.txt
-#echo "resvis       (Restart Service Dropbear, Webmin, Squid3, OpenVPN dan SSH)"  | tee -a log-install.txt
-echo "reboot       (Reboot VPS)"  | tee -a log-install.txt
-echo "speedtest    (Speedtest VPS)"  | tee -a log-install.txt
-echo "info         (Menampilkan Informasi Sistem)"  | tee -a log-install.txt
-echo ""  | tee -a log-install.txt
-echo "Fitur lain"  | tee -a log-install.txt
-echo "----------"  | tee -a log-install.txt
-echo "Timezone : Asia/Jakarta (GMT +7)"  | tee -a log-install.txt
-echo "IPv6     : [off]"  | tee -a log-install.txt
-echo ""  | tee -a log-install.txt
-echo "Thanks To"  | tee -a log-install.txt
-echo "---------"  | tee -a log-install.txt
-echo "Allah"  | tee -a log-install.txt
-echo "Google"  | tee -a log-install.txt
-echo ""  | tee -a log-install.txt
-echo "VPS AUTO REBOOT SETIAP JAM 00.00 WIB"  | tee -a log-install.txt
-echo "Log Installation --> /root/log-install.txt"  | tee -a log-install.txt
-echo ""  | tee -a log-install.txt
-echo "==========================================="  | tee -a log-install.txt
+echo "   >>> Service & Port"  | tee -a log-install.txt
+echo "----------------------------------------------------------------------"  | tee -a log-install.txt
+echo "    -  OpenSSH             : 22, 234"  | tee -a log-install.txt
+echo "    -  Dropbear            : 222, 444"  | tee -a log-install.txt
+echo "    -  OpenSSH WS          : 80 "  | tee -a log-install.txt
+echo "    -  SSL                 : 443"  | tee -a log-install.txt
+echo "    -  Squid               : 8080, 3128 (limit to IP SSH)"  | tee -a log-install.txt
+echo "    -  OpenVPN             : TCP 1194 (client config : http://$myip:81/client.ovpn)"  | tee -a log-install.txt
+echo "    -  badvpn              : badvpn-udpgw port 7300"  | tee -a log-install.txt
+echo "    -  nginx               : 81"  | tee -a log-install.txt
+echo "    -  "  | tee -a log-install.txt
+echo "    -  Script"  | tee -a log-install.txt
+echo "    -  ------"  | tee -a log-install.txt
+echo "    -  menu           (Menampilkan daftar perintah yang tersedia)"  | tee -a log-install.txt
+echo "    -  add            (Membuat Akaun SSH)"  | tee -a log-install.txt
+echo "    -  trial          (Membuat Akaun Trial)"  | tee -a log-install.txt
+echo "    -  del            (Menghapus Akaun SSH)"  | tee -a log-install.txt
+echo "    -  cek            (Cek User Login)"  | tee -a log-install.txt
+echo "    -  list           (Cek Member SSH)"  | tee -a log-install.txt
+echo "    -  del_ex         (Delete User expired)"  | tee -a log-install.txt
+#echo     -  "resvis        (Restart Service Dropbear, Squid, OpenVPN dan SSH)"  | tee -a log-install.txt
+echo "    -  reboot         (Reboot VPS)"  | tee -a log-install.txt
+echo "    -  speedtest      (Speedtest VPS)"  | tee -a log-install.txt
+echo "    -  info           (Menampilkan Informasi Sistem)"  | tee -a log-install.txt
+echo "    -  "  | tee -a log-install.txt
+echo "    -  Fitur lain"  | tee -a log-install.txt
+echo "    -  -----------------------------------------------------------------"  | tee -a log-install.txt
+echo "    -  Timezone : Asia/Jakarta (GMT +7)"  | tee -a log-install.txt
+echo "    -  IPv6     : [off]"  | tee -a log-install.txt
+echo "    -  "  | tee -a log-install.txt
+echo "    -  Thanks To"  | tee -a log-install.txt
+echo "    -  -----------------------------------------------------------------"  | tee -a log-install.txt
+echo "    -  Allah"  | tee -a log-install.txt
+echo "    -  Google"  | tee -a log-install.txt
+echo "    -  "  | tee -a log-install.txt
+echo "    -  VPS AUTO REBOOT SETIAP JAM 00.00 WIB"  | tee -a log-install.txt
+echo "    -  Log Installation --> /root/log-install.txt"  | tee -a log-install.txt
+echo "    -  "  | tee -a log-install.txt
+echo "==========================================================================="  | tee -a log-install.txt
 cd
-rm -f /root/debian10.sh
+rm -f /root/deb10.sh

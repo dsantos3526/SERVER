@@ -1,0 +1,5 @@
+#!/bin/bash
+
+read -p " >>> Masukan Domain   : " domain
+
+echo "$domain" > /root/domain.txt
