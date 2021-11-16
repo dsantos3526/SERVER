@@ -29,6 +29,11 @@ then
   echo "$myip" >> /root/ip.txt
 fi
 
+# disable ipv6
+echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6
+sed -i '$ i\echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6' /etc/rc.local
+
+
 #Update && Upgrade Debian
 apt-get update --allow-releaseinfo-change
 apt-get -y update && apt-get -y upgrade
@@ -191,7 +196,7 @@ rm -rf /root/ddos-deflate-master.zip
 
 # setting banner
 rm /etc/banner.txt
-wget -O /etc/banner.txt "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10//script/banner.txt"
+wget -O /etc/banner.txt "https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/banner.txt"
 sed -i 's@#Banner@Banner@g' /etc/ssh/sshd_config
 sed -i 's@DROPBEAR_BANNER=""@DROPBEAR_BANNER="/etc/banner.txt"@g' /etc/default/dropbear
 service ssh restart

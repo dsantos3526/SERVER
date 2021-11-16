@@ -1,38 +1,86 @@
 #!/bin/bash
-
-echo -e "[*][*][*]======================================[*][*][*]"      | lolcat
-echo -e "                                                  "            | lolcat
-echo -e "            Panel Utama GTG COMPUTER"                          | lolcat
-echo -e "                                                          "    | lolcat
-echo -e "    [1] Panel SSH (SSH, WebsocketSSH & OpenVPN)"               | lolcat
-echo -e "    [2] Panel V2ray (Vmess, Vless, Trojan)"                    | lolcat
-echo -e "    [4] Panel Shadowsocks (ShadowsocksR & Shadowsocks OBFS)"   | lolcat
-echo -e "    [3] Panel Wireguard"                                       | lolcat
-echo -e "    [4] Panel PSP (L2TP, SSTP, PPTP)"                          | lolcat
-echo -e "    [x] Exit"                                                  | lolcat
-echo -e "                                                   "           | lolcat
-read -p "      Select From Options [1-4 or x] :  " vvt
-echo -e "                                                   "           | lolcat
-echo -e "[*][*][*]======================================[*][*][*]"      | lolcat
 clear
-case $vvt in
-
-1)
-panel-ssh
-;;
-2)
-panel-v2ray
-;;
-3)
-panel-ss
-;;
-4)
-panel-wg
-;;
-x)
-panel-psp
-;;
-*)
-echo "Please enter an correct number"
-;;
-esac
+echo -e ""
+echo -e "=============================-Menu-============================="
+echo -e "* menu         : List of Main Commands"
+echo -e ""
+echo -e "=========================-SSH, WebsocketSSH & OpenVPN-========================"
+echo -e "* usernew     : Create SSH & OpenVPN Account"
+echo -e "* trial        : Generate SSH & OpenVPN Trial Account"
+echo -e "* renew        : Extending SSH & OpenVPN Account Active Life"
+echo -e "* deleteuser   : Delete SSH & OpenVPN Account"
+echo -e "* check        : Check User Login SSH & OpenVPN"
+echo -e "* member       : Daftar Member SSH & OpenVPN"
+echo -e "* delete       : Delete User Expired SSH & OpenVPN"
+echo -e "* autokill     : Set up Autokill SSH"
+echo -e "* checkuser    : Displays Users Who Do Multi Login SSH"
+echo -e "* restart      : Restart Service Dropbear, Squid3, OpenVPN and SSH"
+echo -e ""
+echo -e "===========================-Wireguard-========================="
+echo -e "* add-wg       : Create Wireguard Account"
+echo -e "* del-wg       : Delete Wireguard Account"
+echo -e "* renew-wg     : Extending Wireguard Account Active Life"
+echo -e ""
+echo -e "=============================-L2TP-============================"
+echo -e "* add-l2tp     : Creating L2TP Account"
+echo -e "* del-l2tp     : Deleting L2TP Account"
+echo -e "* renew-l2tp   : Extending L2TP Account Active Life"
+echo -e ""
+echo -e "=============================-PPTP-============================"
+echo -e "* add-pptp     : Create Account PPTP"
+echo -e "* del-pptp     : Delete PPTP Account"
+echo -e "* renew-pptp   : Extending PPTP Account Active Life"
+echo -e "* check-pptp   : Check User Login PPTP"
+echo -e ""
+echo -e "=============================-SSTP-============================"
+echo -e "* add-sstp     : Create Account SSTP"
+echo -e "* del-sstp     : Delete SSTP Account"
+echo -e "* renew-sstp   : Extending SSTP Account Active Life"
+echo -e "* check-sstp   : Check User Login SSTP"
+echo -e ""
+echo -e "=============================-SSR-============================="
+echo -e "* add-ssr      : Create SSR Account"
+echo -e "* del-ssr      : Deleting SSR Account"
+echo -e "* renew-ssr    : Extending SSR Account Active Life"
+echo -e ""
+echo -e "========================-Shadowsocks OBFS-====================="
+echo -e "* add-ss       : Creating Shadowsocks Account"
+echo -e "* del-ss       : Delete Shadowsocks Account"
+echo -e "* renew-ss     : Extending Shadowsocks Account Active Life"
+echo -e "* check-ss     : Check User Login Shadowsocks"
+echo -e ""
+echo -e "=============================-VMESS-==========================="
+echo -e "* add-vmess    : Create V2RAY Vmess Websocket Account"
+echo -e "* del-vmess    : Deleting V2RAY Vmess Websocket Account"
+echo -e "* renew-vmess  : Extending Vmess Account Active Life"
+echo -e "* check-vmess  : Check User Login V2RAY"
+echo -e "* cert2vray    : Renew Certificate V2RAY Account"
+echo -e ""
+echo -e "=============================-VLESS-==========================="
+echo -e "* add-vless    : Create V2RAY Vless Websocket Account"
+echo -e "* del-vless    : Deleting V2RAY Vless Websocket Account"
+echo -e "* renew-vless  : Extending Vless Account Active Life"
+echo -e "* check-vless     : Check User Login V2RAY"
+echo -e ""
+echo -e "=============================-Trojan-=========================="
+echo -e "* add-tr       : Create Trojan Account"
+echo -e "* del-tr       : Deleting Trojan Account"
+echo -e "* renew-tr     : Extending Trojan Account Active Life"
+echo -e "* check-tr     : Check User Login Trojan"
+echo -e ""
+echo -e "=============================-SYSTEM-=========================="
+echo -e "* add-host     : Add Or Change Subdomain Host For VPS"
+echo -e "* change-port  : Change Port of Some Service"
+echo -e "* wbmn         : Webmin Menu"
+echo -e "* kernel-updt  : Update To Latest Kernel"
+echo -e "* limit-speed  : Limit Bandwith Speed Server"
+echo -e "* ram          : Check Usage of VPS Ram"
+echo -e "* reboot       : Reboot VPS"
+echo -e "* speedtest    : Speedtest VPS"
+echo -e "* update       : Update To Latest Script Version"
+echo -e "* info         : Displaying System Information"
+echo -e "* about        : Info Script Auto Install"
+echo -e "* exit         : Exit From VPS "
+echo -e ""
+echo -e "==============================================================="
+echo -e ""
