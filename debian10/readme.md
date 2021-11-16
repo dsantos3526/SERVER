@@ -14,5 +14,5 @@ wget https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/deb10.sh
 
 sslh (multiport)
 ```
-https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/multiport/sslh
+wget https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/multiport/sslh && chmod +x sslh && bash sslh
 ```
