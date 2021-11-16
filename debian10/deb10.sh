@@ -206,8 +206,8 @@ service dropbear restart
 
 
 #Install Websocket
-wget https://github.com/dsantos3526/SERVER/blob/main/debian10/script/websocket/install-ws.sh
-chmod +x isntall-ws.sh
+wget https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/websocket/install-ws.sh
+chmod +x install-ws.sh
 bash install-ws.sh
 rm -f install-ws.sh
 
@@ -237,7 +237,7 @@ wget -O /usr/bin/del_ex https://raw.githubusercontent.com/dsantos3526/SERVER/mai
 wget -O /usr/bin/speedtest https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/speedtest.py
 wget -O /usr/bin/info https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/info
 wget -O /usr/bin/about https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/about
-wget -O /usr/bin/about https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/domain
+wget -O /usr/bin/domain https://raw.githubusercontent.com/dsantos3526/SERVER/main/debian10/script/menu/domain
 echo "0 0 * * * root /sbin/reboot" > /etc/cron.d/reboot
 
 chmod +x /usr/bin/menu
