@@ -1,5 +1,5 @@
 #!/bin/bash
-
+clear
 read -p "Nama user SSH yang akan dihapus : " Pengguna
 
 if getent passwd $Pengguna > /dev/null 2>&1; then
