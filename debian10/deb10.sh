@@ -204,22 +204,6 @@ sed -i 's@DROPBEAR_BANNER=""@DROPBEAR_BANNER="/etc/banner.txt"@g' /etc/default/d
 service ssh restart
 service dropbear restart
 
-# setting vnstat
-apt -y install vnstat
-/etc/init.d/vnstat restart
-apt -y install libsqlite3-dev
-wget https://humdi.net/vnstat/vnstat-2.6.tar.gz
-tar zxvf vnstat-2.6.tar.gz
-cd vnstat-2.6
-./configure --prefix=/usr --sysconfdir=/etc && make && make install
-cd
-vnstat -u -i $NET
-sed -i 's/Interface "'""eth0""'"/Interface "'""$NET""'"/g' /etc/vnstat.conf
-chown vnstat:vnstat /var/lib/vnstat -R
-systemctl enable vnstat
-/etc/init.d/vnstat restart
-rm -f /root/vnstat-2.6.tar.gz
-rm -rf /root/vnstat-2.6
 
 #Install Websocket
 wget https://github.com/dsantos3526/SERVER/blob/main/debian10/script/websocket/install-ws.sh
@@ -228,37 +212,18 @@ bash install-ws.sh
 rm -f install-ws.sh
 
 #ufw
-#sudo ufw enabled
-#sudo ufw allow 443 comment "Stunnel"
-#sudo ufw allow 1194 comment "Openvpn"
-#sudo ufw allow 80 comment "Http"
-#sudo ufw allow 22 comment "SSH OPenssh"
-#sudo ufw allow 81 comment "Nginx"
-#sudo ufw allow 222 comment "Dropbear"
-#sudo ufw allow 444 comment "Dropbear"
-#sudo ufw enable
+sudo ufw enabled
+sudo ufw allow 443 comment "Stunnel"
+sudo ufw allow 1194 comment "Openvpn"
+sudo ufw allow 80 comment "Http"
+sudo ufw allow 22 comment "SSH OPenssh"
+sudo ufw allow 81 comment "Nginx"
+sudo ufw allow 222 comment "Dropbear"
+sudo ufw allow 444 comment "Dropbear"
+sudo ufw enable
 
 
-# Firewall Allow IPTables
-iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 1194 -j ACCEPT
-iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT
-iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 81 -j ACCEPT
-iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 222 -j ACCEPT
-iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 444 -j ACCEPT
-iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT
-iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j ACCEPT
-iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 234 -j ACCEPT
 
-iptables -I INPUT -m state --state NEW -m udp -p udp --dport 1194 -j ACCEPT
-iptables -I INPUT -m state --state NEW -m udp -p udp --dport 443 -j ACCEPT
-iptables -I INPUT -m state --state NEW -m udp -p udp --dport 81 -j ACCEPT
-iptables -I INPUT -m state --state NEW -m udp -p udp --dport 222 -j ACCEPT
-iptables -I INPUT -m state --state NEW -m udp -p udp --dport 444 -j ACCEPT
-iptables -I INPUT -m state --state NEW -m udp -p udp --dport 80 -j ACCEPT
-iptables -I INPUT -m state --state NEW -m udp -p udp --dport 22 -j ACCEPT
-iptables -I INPUT -m state --state NEW -m udp -p udp --dport 234 -j ACCEPT
-iptables-save > /etc/iptables.up.rules
-iptables-restore -t < /etc/iptables.up.rules
 
 ##Download Script
 cd /usr/bin
