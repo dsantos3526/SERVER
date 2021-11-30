@@ -6,10 +6,10 @@ MYIP=$(wget -qO- icanhazip.com);
 echo "Script By GTG VPN"
 clear
 apt install jq curl -y
-DOMAIN=polarisvpn.cf
+DOMAIN=gtgcomputer.my.id
 sub=$(</dev/urandom tr -dc a-z0-9 | head -c4)
-SUB_DOMAIN=${sub}.polarisvpn.cf
-CF_ID=jconadera@gmail.com
+SUB_DOMAIN=${sub}.gtgcomputer.my.id
+CF_ID=diyansantoso1992@gmail.com
 CF_KEY=e95c28a344251e89a0c752171d590ce39f6b9
 set -euo pipefail
 IP=$(wget -qO- icanhazip.com);
