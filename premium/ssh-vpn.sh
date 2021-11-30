@@ -179,6 +179,15 @@ cat key.pem cert.pem >> /etc/stunnel/stunnel.pem
 sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
 /etc/init.d/stunnel4 restart
 
+#SSLH
+apt install sslh
+cat > /etc/stunnel/stunnel.conf <<-END
+RUN=yes
+DAEMON=/usr/sbin/sslh
+DAEMON_OPTS='--user sslh --listen 0.0.0.0:443 --ssh 127.0.0.1:109 --tls 127.0.0.1:9443 --http 127.0.0.1:80 --pidfile /var/run/sslh/sslh.pid'
+END
+
+
 #OpenVPN
 wget https://raw.githubusercontent.com/dsantos3526/SERVER/main/premium/vpn.sh &&  chmod +x vpn.sh && ./vpn.sh
 
@@ -302,6 +311,9 @@ chown -R www-data:www-data /home/vps/public_html
 /etc/init.d/stunnel4 restart
 /etc/init.d/vnstat restart
 /etc/init.d/squid restart
+/etc/init.d/sslh enable
+/etc/init.d/sslh start
+/etc/init.d/sslh status
 screen -dmS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7100 --max-clients 500
 screen -dmS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7200 --max-clients 500
 screen -dmS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 500
