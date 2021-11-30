@@ -10,7 +10,7 @@ DOMAIN=gtgcomputer.my.id
 sub=$(</dev/urandom tr -dc a-z0-9 | head -c4)
 SUB_DOMAIN=${sub}.gtgcomputer.my.id
 CF_ID=diyansantoso1992@gmail.com
-CF_KEY=e95c28a344251e89a0c752171d590ce39f6b9
+CF_KEY=0444b1f33b2a7e8b05bd90eb73fb1bd2513a5
 set -euo pipefail
 IP=$(wget -qO- icanhazip.com);
 echo "Updating DNS for ${SUB_DOMAIN}..."
@@ -39,4 +39,4 @@ RESULT=$(curl -sLX PUT "https://api.cloudflare.com/client/v4/zones/${ZONE}/dns_r
      --data '{"type":"A","name":"'${SUB_DOMAIN}'","content":"'${IP}'","ttl":120,"proxied":false}')
 echo "Host : $SUB_DOMAIN"
 echo $SUB_DOMAIN > /root/domain
-rm -f /root/cf.sh
+rm -f /root/cloudflare.sh
