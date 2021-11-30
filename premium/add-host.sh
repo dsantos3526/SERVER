@@ -1,5 +1,5 @@
 #!/bin/bash
-
+clear
 read -p "Input New Domain : " domainbaru
 
 #Validate
