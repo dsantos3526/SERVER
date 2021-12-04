@@ -1,10 +1,10 @@
 #!/bin/bash
-#by vpninjector
+#by GTGVPN
 
 echo -e "                                                  "| lolcat
 echo -e "[*][*][*]======================================[*][*][*]"| lolcat
 echo -e "                                                   "| lolcat
-echo -e "            AutoScript By VPNinjector.com"| lolcat
+echo -e "            AutoScript By GTG VPN"| lolcat
 echo -e "                                                   "| lolcat
 echo -e "            [1] Create Account Shadowsocks"| lolcat
 echo -e "            [2] Create Account ShadowsocksR"| lolcat

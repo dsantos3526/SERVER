@@ -181,7 +181,7 @@ sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
 
 #SSLH
 apt install sslh
-cat > /etc/stunnel/stunnel.conf <<-END
+cat > /etc/default/sslh <<-END
 RUN=yes
 DAEMON=/usr/sbin/sslh
 DAEMON_OPTS='--user sslh --listen 0.0.0.0:443 --ssh 127.0.0.1:109 --tls 127.0.0.1:9443 --http 127.0.0.1:80 --pidfile /var/run/sslh/sslh.pid'

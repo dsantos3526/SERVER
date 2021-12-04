@@ -18,6 +18,7 @@ exit 0
 fi
 mkdir /var/lib/premium-script;
 echo "IP=$MYIP" >> /var/lib/premium-script/ipvps.conf
+.
 
 #text
 apt install boxes
@@ -71,7 +72,7 @@ rm -f /root/inswssh.sh
 cat <<EOF> /etc/systemd/system/autosett.service
 [Unit]
 Description=autosetting
-Documentation=https://polarisvpn.tk
+Documentation=https://gtgcomputer.my.id
 
 [Service]
 Type=oneshot
